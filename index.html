@@ -1,198 +1,470 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Syndicate.AI</title>
-    <!-- Official Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body { 
-            margin: 0; 
-            background: #050505; 
-            color: #0f0; 
-            font-family: monospace; 
-            overflow: hidden; 
-            user-select: none; /* Prevents text highlighting when tapping */
-            -webkit-user-select: none;
-        }
-        /* Background Layer - Cyberpunk Server Room */
-        .bg-layer {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            opacity: 0.5;
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600"><defs><linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%%" style="stop-color:%23001100;stop-opacity:1" /><stop offset="50%%" style="stop-color:%23000000;stop-opacity:1" /><stop offset="100%%" style="stop-color:%23000000;stop-opacity:1" /></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="1200" height="1600" fill="url(%23grad1)"/><rect x="50" y="100" width="150" height="1400" fill="%23001a00" opacity="0.3" filter="url(%23glow)"/><rect x="1000" y="100" width="150" height="1400" fill="%23001a00" opacity="0.3" filter="url(%23glow)"/><circle cx="600" cy="800" r="80" fill="%230f0" opacity="0.15" filter="url(%23glow)"/></svg>');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            backdrop-filter: blur(1px);
-        }
-        
-        /* Dark overlay for text readability */
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(0.5px);
-        }
-        
-        .header { 
-            padding: 20px; 
-            text-align: center; 
-            font-size: 22px; 
-            text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; 
-            color: #0f0;
-            letter-spacing: 2px;
-            animation: glitch 3s infinite;
-        }
-        
-        @keyframes glitch {
-            0%, 100% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
-            50% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0, 0 0 30px #00ff00; }
-        }
-        
-        .stats { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 0 30px; 
-            font-size: 18px; 
-            font-weight: bold;
-            text-shadow: 0 0 10px #0f0;
-            color: #0f0;
-            letter-spacing: 1px;
-        }
-        
-        /* The Tap Target */
-        .core-container { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 55vh; 
-        }
-        
-        .core-target { 
-            width: 220px; 
-            height: 220px; 
-            background: radial-gradient(circle, #0f0 5%, #002200 70%); 
-            border-radius: 50%; 
-            box-shadow: 0 0 40px #0f0, inset 0 0 20px rgba(0, 255, 0, 0.3); 
-            transition: transform 0.05s ease-out, box-shadow 0.1s ease-out; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #000;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 0 0 5px #0f0;
-            cursor: pointer;
-            letter-spacing: 2px;
-        }
-        
-        .core-target:active { 
-            transform: scale(0.93); 
-            box-shadow: 0 0 80px #0f0, inset 0 0 30px rgba(0, 255, 0, 0.5); 
-        }
-        
-        .core-target:hover {
-            box-shadow: 0 0 60px #0f0, inset 0 0 25px rgba(0, 255, 0, 0.4);
-        }
-        
-        /* Bottom Navigation */
-        .nav { 
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            display: flex; 
-            justify-content: space-around; 
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(5, 5, 5, 0.8)); 
-            padding: 20px 0; 
-            border-top: 2px solid #0f0; 
-            padding-bottom: env(safe-area-inset-bottom);
-            box-shadow: 0 -5px 20px rgba(0, 255, 0, 0.2);
-        }
-        
-        .nav-btn { 
-            color: #0f0; 
-            background: none; 
-            border: 1px solid #0f0;
-            border-radius: 4px;
-            padding: 8px 16px;
-            font-family: monospace; 
-            font-size: 14px;
-            cursor: pointer;
-            text-shadow: 0 0 5px #0f0;
-            transition: all 0.2s ease-out;
-            letter-spacing: 1px;
-        }
-        
-        .nav-btn:active,
-        .nav-btn:hover {
-            background: rgba(0, 255, 0, 0.1);
-            box-shadow: 0 0 15px #0f0, inset 0 0 10px rgba(0, 255, 0, 0.2);
-            transform: scale(1.05);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>Syndicate.AI</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: monospace;
+      background: #000;
+      color: #7CFF7C;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      position: relative;
+    }
+
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.7)),
+        url("IMG_6298.jpeg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -3;
+    }
+
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(0,255,100,0.08) 0%, rgba(0,0,0,0) 45%),
+        linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .header {
+      padding: 20px 18px 8px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #7CFF7C;
+      text-shadow: 0 0 10px rgba(0,255,0,0.75);
+      letter-spacing: 1px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 18px 14px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #8DFF8D;
+      text-shadow: 0 0 8px rgba(0,255,0,0.55);
+    }
+
+    .stat-box {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(75,255,75,0.4);
+      border-radius: 10px;
+      padding: 8px 12px;
+      min-width: 110px;
+      backdrop-filter: blur(3px);
+    }
+
+    .screens {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 0 100px;
+    }
+
+    .screen {
+      display: none;
+      min-height: 100%;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .core-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 58vh;
+      position: relative;
+    }
+
+    .core-target {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: #021b02;
+      background:
+        radial-gradient(circle at 35% 30%, #98ff98 0%, #39ff14 25%, #0b9f18 58%, #043c0b 100%);
+      box-shadow:
+        0 0 20px rgba(0,255,0,0.35),
+        0 0 55px rgba(0,255,0,0.35),
+        inset 0 0 28px rgba(255,255,255,0.1);
+      border: 2px solid rgba(170,255,170,0.25);
+      transition: transform 0.05s ease-out, box-shadow 0.08s ease-out;
+    }
+
+    .core-target:active {
+      transform: scale(0.95);
+      box-shadow:
+        0 0 30px rgba(0,255,0,0.45),
+        0 0 80px rgba(0,255,0,0.45),
+        inset 0 0 38px rgba(255,255,255,0.12);
+    }
+
+    .tap-note {
+      text-align: center;
+      color: #aaffaa;
+      font-size: 13px;
+      margin-top: -28px;
+      text-shadow: 0 0 8px rgba(0,255,0,0.4);
+    }
+
+    .panel {
+      margin: 16px;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(80,255,80,0.32);
+      background: rgba(0, 8, 0, 0.68);
+      color: #b9ffb9;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 18px rgba(0,255,0,0.08);
+    }
+
+    .panel h2 {
+      font-size: 21px;
+      margin-bottom: 14px;
+      color: #88ff88;
+      text-shadow: 0 0 10px rgba(0,255,0,0.45);
+    }
+
+    .panel p {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .upgrade-card, .task-card, .friend-card {
+      border: 1px solid rgba(95,255,95,0.2);
+      background: rgba(0, 18, 0, 0.55);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #9dff9d;
+      margin-bottom: 6px;
+    }
+
+    .card-meta {
+      font-size: 13px;
+      color: #c8ffc8;
+      margin-bottom: 12px;
+    }
+
+    .action-btn {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, #61ff61 0%, #1ad11a 100%);
+      color: #031403;
+      font-family: monospace;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .action-btn:active {
+      transform: scale(0.98);
+    }
+
+    .muted {
+      color: #8dcf8d;
+      font-size: 13px;
+    }
+
+    .nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+      background: rgba(0, 0, 0, 0.82);
+      border-top: 1px solid rgba(80,255,80,0.35);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-btn {
+      border: 1px solid rgba(80,255,80,0.22);
+      background: rgba(0, 18, 0, 0.58);
+      color: #78ff78;
+      border-radius: 12px;
+      min-height: 48px;
+      font-size: 13px;
+      font-family: monospace;
+      font-weight: bold;
+    }
+
+    .nav-btn.active-tab {
+      background: rgba(40,255,40,0.18);
+      box-shadow: 0 0 12px rgba(0,255,0,0.18);
+      color: #caffca;
+    }
+
+    .floating-plus {
+      position: absolute;
+      color: #b8ffb8;
+      font-size: 22px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0,255,0,0.8);
+      pointer-events: none;
+      animation: floatUp 700ms ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-48px) scale(1.15);
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="bg-layer"></div>
-    <div class="overlay"></div>
+  <div class="bg-layer"></div>
+  <div class="bg-glow"></div>
+
+  <div class="app">
     <div class="header" id="username">AGENT_INIT</div>
-    
+
     <div class="stats">
-        <div>DATA: <span id="score">0</span></div>
-        <div>ENG: <span id="energy">1000</span></div>
+      <div class="stat-box">DATA: <span id="score">0</span></div>
+      <div class="stat-box">ENG: <span id="energy">1000</span></div>
     </div>
 
-    <div class="core-container">
-        <!-- Tap area -->
-        <div class="core-target" id="tapTarget">HACK</div>
+    <div class="screens">
+      <section id="screen-hack" class="screen active">
+        <div class="core-container" id="coreArea">
+          <div class="core-target" id="tapTarget">HACK</div>
+        </div>
+        <div class="tap-note">Tap the core to extract DATA</div>
+      </section>
+
+      <section id="screen-upgrades" class="screen">
+        <div class="panel">
+          <h2>UPGRADES</h2>
+          <p class="muted">Boost your output and scale faster.</p>
+
+          <div class="upgrade-card">
+            <div class="card-title">Botnet Script</div>
+            <div class="card-meta">Cost: 100 DATA · Adds +1 DATA per tap</div>
+            <button class="action-btn" onclick="buyUpgrade()">Buy upgrade</button>
+          </div>
+
+          <div class="upgrade-card">
+            <div class="card-title">Upgrade Level</div>
+            <div class="card-meta">Current level: <span id="upgradeLevelText">0</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-tasks" class="screen">
+        <div class="panel">
+          <h2>TASKS</h2>
+          <p class="muted">Prototype reward system for growth loops.</p>
+
+          <div class="task-card">
+            <div class="card-title">Join channel</div>
+            <div class="card-meta">Reward: 50 DATA</div>
+            <button class="action-btn" onclick="claimTask()">Claim test task</button>
+          </div>
+
+          <div class="task-card">
+            <div class="card-title">Task status</div>
+            <div class="card-meta" id="taskStatus">Not claimed</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-friends" class="screen">
+        <div class="panel">
+          <h2>FRIENDS</h2>
+          <p class="muted">Referral placeholder for viral growth.</p>
+
+          <div class="friend-card">
+            <div class="card-title">Referral Code</div>
+            <div class="card-meta" id="referralText">SYNDICATE-001</div>
+          </div>
+
+          <div class="friend-card">
+            <div class="card-title">Referral Bonus</div>
+            <div class="card-meta">Future version: earn a % from invited players.</div>
+          </div>
+        </div>
+      </section>
     </div>
 
     <div class="nav">
-        <button class="nav-btn">HACK</button>
-        <button class="nav-btn">UPGRADES</button>
-        <button class="nav-btn">TASKS</button>
-        <button class="nav-btn">FRIENDS</button>
+      <button class="nav-btn active-tab" id="tab-hack" onclick="showScreen('hack')">HACK</button>
+      <button class="nav-btn" id="tab-upgrades" onclick="showScreen('upgrades')">UPGRADES</button>
+      <button class="nav-btn" id="tab-tasks" onclick="showScreen('tasks')">TASKS</button>
+      <button class="nav-btn" id="tab-friends" onclick="showScreen('friends')">FRIENDS</button>
     </div>
+  </div>
 
-    <script>
-        // Initialize Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Forces the app to open full-screen
-        tg.ready();
+  <script>
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
-        // Game State Variables
-        let score = 0;
-        let energy = 1000;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
 
-        // Pull username from Telegram API
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('username').innerText = "AGENT_" + tg.initDataUnsafe.user.first_name.toUpperCase();
+    let score = 0;
+    let energy = 1000;
+    let upgradeLevel = 0;
+    let taskClaimed = false;
+
+    const usernameEl = document.getElementById("username");
+    const scoreEl = document.getElementById("score");
+    const energyEl = document.getElementById("energy");
+    const tapTarget = document.getElementById("tapTarget");
+    const coreArea = document.getElementById("coreArea");
+    const upgradeLevelText = document.getElementById("upgradeLevelText");
+    const taskStatus = document.getElementById("taskStatus");
+
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.first_name) {
+      usernameEl.textContent = "AGENT_" + tg.initDataUnsafe.user.first_name.toUpperCase();
+    }
+
+    function updateUI() {
+      scoreEl.textContent = score;
+      energyEl.textContent = energy;
+      upgradeLevelText.textContent = upgradeLevel;
+      taskStatus.textContent = taskClaimed ? "Claimed" : "Not claimed";
+    }
+
+    function showScreen(name) {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.remove("active-tab");
+      });
+
+      document.getElementById("screen-" + name).classList.add("active");
+      document.getElementById("tab-" + name).classList.add("active-tab");
+    }
+
+    function buyUpgrade() {
+      if (score >= 100) {
+        score -= 100;
+        upgradeLevel += 1;
+        updateUI();
+        alert("Upgrade purchased. Tap bonus is now +" + upgradeLevel);
+      } else {
+        alert("Not enough DATA");
+      }
+    }
+
+    function claimTask() {
+      if (taskClaimed) {
+        alert("Task already claimed");
+        return;
+      }
+      score += 50;
+      taskClaimed = true;
+      updateUI();
+      alert("Task reward claimed: +50 DATA");
+    }
+
+    function spawnPlusOne() {
+      const plus = document.createElement("div");
+      plus.className = "floating-plus";
+      plus.textContent = "+" + (1 + upgradeLevel);
+      plus.style.left = "50%";
+      plus.style.top = "50%";
+      plus.style.transform = "translate(-50%, -50%)";
+      coreArea.appendChild(plus);
+
+      setTimeout(() => {
+        plus.remove();
+      }, 700);
+    }
+
+    function handleTap(e) {
+      e.preventDefault();
+
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (energy > 0) {
+          score += 1 + upgradeLevel;
+          energy -= 1;
+          updateUI();
+          spawnPlusOne();
+
+          if (tg && tg.HapticFeedback) {
+            tg.HapticFeedback.impactOccurred("light");
+          }
         }
+      }
+    }
 
-        const tapTarget = document.getElementById('tapTarget');
-        const scoreDisplay = document.getElementById('score');
-        const energyDisplay = document.getElementById('energy');
+    tapTarget.addEventListener("touchstart", handleTap, { passive: false });
 
-        // Tap Logic with multi-touch support
-        tapTarget.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevents double-tap zooming on mobile
-            
-            // Loop through each finger touching the screen
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                if (energy > 0) {
-                    score += 1;
-                    energy -= 1;
-                    scoreDisplay.innerText = score;
-                    energyDisplay.innerText = energy;
-                    
-                    // Trigger native iPhone vibration
-                    tg.HapticFeedback.impactOccurred('light');
-                }
-            }
-        }, { passive: false });
-    </script>
+    tapTarget.addEventListener("click", function(e) {
+      if (energy > 0) {
+        score += 1 + upgradeLevel;
+        energy -= 1;
+        updateUI();
+        spawnPlusOne();
+
+        if (tg && tg.HapticFeedback) {
+          tg.HapticFeedback.impactOccurred("light");
+        }
+      }
+    });
+
+    updateUI();
+    showScreen("hack");
+  </script>
 </body>
 </html>
