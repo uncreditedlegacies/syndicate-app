@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Syndicate.AI</title>
+    <!-- Official Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            background: #050505; 
+            color: #0f0; 
+            font-family: monospace; 
+            overflow: hidden; 
+            user-select: none; /* Prevents text highlighting when tapping */
+            -webkit-user-select: none;
+        }
+        /* Background Layer */
+        .bg-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+            /* We will swap this with your generated asset later */
+            background: linear-gradient(180deg, #001100 0%, #000 100%);
+        }
+        .header { 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 22px; 
+            text-shadow: 0 0 10px #0f0; 
+        }
+        .stats { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 0 30px; 
+            font-size: 18px; 
+            font-weight: bold;
+        }
+        /* The Tap Target */
+        .core-container { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 55vh; 
+        }
+        .core-target { 
+            width: 220px; 
+            height: 220px; 
+            background: radial-gradient(circle, #0f0 5%, #002200 70%); 
+            border-radius: 50%; 
+            box-shadow: 0 0 40px #0f0; 
+            transition: transform 0.05s ease-out; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #000;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .core-target:active { 
+            transform: scale(0.93); 
+            box-shadow: 0 0 80px #0f0; 
+        }
+        /* Bottom Navigation */
+        .nav { 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            display: flex; 
+            justify-content: space-around; 
+            background: #0a0a0a; 
+            padding: 20px 0; 
+            border-top: 1px solid #0f0; 
+            padding-bottom: env(safe-area-inset-bottom); /* iPhone notch fix */
+        }
+        .nav-btn { 
+            color: #0f0; 
+            background: none; 
+            border: none; 
+            font-family: monospace; 
+            font-size: 14px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer"></div>
+    <div class="header" id="username">AGENT_INIT</div>
+    
+    <div class="stats">
+        <div>DATA: <span id="score">0</span></div>
+        <div>ENG: <span id="energy">1000</span></div>
+    </div>
+
+    <div class="core-container">
+        <!-- Tap area -->
+        <div class="core-target" id="tapTarget">HACK</div>
+    </div>
+
+    <div class="nav">
+        <button class="nav-btn">HACK</button>
+        <button class="nav-btn">UPGRADES</button>
+        <button class="nav-btn">TASKS</button>
+        <button class="nav-btn">FRIENDS</button>
+    </div>
+
+    <script>
+        // Initialize Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Forces the app to open full-screen
+        tg.ready();
+
+        // Game State Variables
+        let score = 0;
+        let energy = 1000;
+
+        // Pull username from Telegram API
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('username').innerText = "AGENT_" + tg.initDataUnsafe.user.first_name.toUpperCase();
+        }
+
+        const tapTarget = document.getElementById('tapTarget');
+        const scoreDisplay = document.getElementById('score');
+        const energyDisplay = document.getElementById('energy');
+
+        // Tap Logic with multi-touch support
+        tapTarget.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevents double-tap zooming on mobile
+            
+            // Loop through each finger touching the screen
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (energy > 0) {
+                    score += 1;
+                    energy -= 1;
+                    scoreDisplay.innerText = score;
+                    energyDisplay.innerText = energy;
+                    
+                    // Trigger native iPhone vibration
+                    tg.HapticFeedback.impactOccurred('light');
+                }
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
